@@ -9,9 +9,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MessageQueue <T> {
-
-    Optional<MethodRequestType> pendingType = Optional.empty();
-
     private final Queue<IMethodRequest<T>> priorityQueue = new ArrayDeque<>();
     private final Queue<IMethodRequest<T>> tailQueue = new ArrayDeque<>();
 
