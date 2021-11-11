@@ -12,8 +12,8 @@ public class MessageQueue <T> {
 
     Optional<MethodRequestType> pendingType = Optional.empty();
 
-    private final Queue<IMethodRequest> priorityQueue = new ArrayDeque<>();
-    private final Queue<IMethodRequest> tailQueue = new ArrayDeque<>();
+    private final Queue<IMethodRequest<T>> priorityQueue = new ArrayDeque<>();
+    private final Queue<IMethodRequest<T>> tailQueue = new ArrayDeque<>();
 
     private final Lock lock = new ReentrantLock(true);
     private final Condition emptyCondition = lock.newCondition();
@@ -43,7 +43,7 @@ public class MessageQueue <T> {
         }
     }
 
-    private IMethodRequest moveToPriorityAsLongAsYouCannotPollTail(MethodRequestType type) throws InterruptedException {
+    private IMethodRequest<T> moveToPriorityAsLongAsYouCannotPollTail(MethodRequestType type) throws InterruptedException {
         while(true) {
             this.moveToPriority(type);
             if(this.tailQueue.isEmpty()) {
@@ -55,7 +55,7 @@ public class MessageQueue <T> {
         }
     }
 
-    public IMethodRequest deque() {
+    public IMethodRequest<T> deque() {
         this.lock.lock();
         try {
             while(this.priorityQueue.isEmpty() && this.tailQueue.isEmpty()) {
@@ -87,7 +87,7 @@ public class MessageQueue <T> {
         }
     }
 
-    public void enqueue(IMethodRequest method) {
+    public void enqueue(IMethodRequest<T> method) {
         this.lock.lock();
         final var type = method.getType();
         this.tailQueue.add(method);
