@@ -7,6 +7,8 @@ import java.util.Queue;
 
 public class MessageQueue <T> {
 
+
+
     private final Queue<IMethodRequest> headQueue = new ArrayDeque<>();
     private final Queue<IMethodRequest> tailQueue = new ArrayDeque<>();
 
@@ -15,6 +17,11 @@ public class MessageQueue <T> {
     }
 
     public IMethodRequest deque() {
-
+        if(!headQueue.isEmpty()) {
+            var method = headQueue.element();
+            if(!method.guard()) {
+                return None;
+            }
+        }
     }
 }
