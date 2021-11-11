@@ -1,22 +1,35 @@
 package JAO;
 
+import JAO.MethodRequest.IMethodRequest;
+
 public class Scheduler<T>{
 
-    private class ServantHandler implements Runnable{
-        volatile boolean stop = false;
+    private final MessageQueue<T> messageQueue;
+    private final Servant<T> servant;
 
+    private class ServantHandler<T> implements Runnable{
+        volatile boolean stop = false;
         @Override
         public void run() { //a.k.a. dispatch
             while(!stop){
-
+                var request = messageQueue.deque();
+                request.call();
             }
         }
     }
 
-    private final ServantHandler servantHandler;
+    private final ServantHandler<T> servantHandler;
+
+    public void enqueue(IMethodRequest<T> request){
+        request.setServant(this.servant);
+        this.messageQueue.enqueue(request);
+    }
 
     public Scheduler(){
-        servantHandler = new ServantHandler();
+        this.messageQueue = new MessageQueue<T>();
+        servantHandler = new ServantHandler<T>();
+        new Thread(servantHandler);
+        servant = new Servant<T>(1000);
     }
 
     public void stop(){

@@ -1,6 +1,15 @@
 package JAO.MethodRequest;
 
-public abstract class MethodRequestBase implements IMethodRequest {
+import JAO.Servant;
+
+public abstract class MethodRequestBase<T> implements IMethodRequest<T> {
+
+    protected Servant<T> servant;
+
+    public void setServant(Servant servant){
+        this.servant = servant;
+    }
+
     private final MethodRequestType type;
 
     protected MethodRequestBase(MethodRequestType type) {
