@@ -3,7 +3,6 @@ package JAO;
 import JAO.MethodRequest.IMethodRequest;
 import JAO.MethodRequest.MethodRequestType;
 
-import java.lang.constant.Constable;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -13,16 +12,12 @@ public class MessageQueue <T> {
 
     Optional<MethodRequestType> pendingType = Optional.empty();
 
-    private final Queue<IMethodRequest> headQueue = new ArrayDeque<>();
+    private final Queue<IMethodRequest> priorityQueue = new ArrayDeque<>();
     private final Queue<IMethodRequest> tailQueue = new ArrayDeque<>();
 
-    private Lock lock = new ReentrantLock(true);
-    private Condition emptyCondition = lock.newCondition();
-    private Map<MethodRequestType, Condition> typesConditions = new HashMap<>();
-
-    public void enqueue(IMethodRequest request) {
-        tailQueue.add(request);
-    }
+    private final Lock lock = new ReentrantLock(true);
+    private final Condition emptyCondition = lock.newCondition();
+    private final Map<MethodRequestType, Condition> typesConditions = new HashMap<>();
 
     private Condition getTypeCondition(MethodRequestType type) {
         if(typesConditions.containsKey(type)) {
@@ -34,15 +29,23 @@ public class MessageQueue <T> {
         }
     }
 
-    void moveToHead(MethodRequestType type) {
+    private void moveToPriority(MethodRequestType type) {
         while(!this.tailQueue.isEmpty() && this.tailQueue.element().getType() == type) {
-            this.headQueue.add(this.tailQueue.poll());
+            this.priorityQueue.add(this.tailQueue.poll());
         }
     }
 
-    private IMethodRequest moveQuesesAsLongAsYouCanPoll(MethodRequestType type) throws InterruptedException {
+    private void signalOtherTypes(MethodRequestType type) {
+        for(var obj : this.typesConditions.entrySet()) {
+            if(obj.getKey() != type) {
+                obj.getValue().signal();
+            }
+        }
+    }
+
+    private IMethodRequest moveToPriorityAsLongAsYouCannotPollTail(MethodRequestType type) throws InterruptedException {
         while(true) {
-            this.moveToHead(type);
+            this.moveToPriority(type);
             if(this.tailQueue.isEmpty()) {
                 var condition = this.getTypeCondition(type);
                 condition.await();
@@ -55,15 +58,16 @@ public class MessageQueue <T> {
     public IMethodRequest deque() {
         this.lock.lock();
         try {
-            while(this.headQueue.isEmpty() && this.tailQueue.isEmpty()) {
+            while(this.priorityQueue.isEmpty() && this.tailQueue.isEmpty()) {
                 this.emptyCondition.await();
             }
-            if(!this.headQueue.isEmpty()) {
-                var head = this.headQueue.element();
+
+            if(!this.priorityQueue.isEmpty()) {
+                var head = this.priorityQueue.element();
                 if(head.guard()) {
-                    return this.headQueue.poll();
+                    return this.priorityQueue.poll();
                 } else {
-                    return moveQuesesAsLongAsYouCanPoll(head.getType());
+                    return moveToPriorityAsLongAsYouCannotPollTail(head.getType());
                 }
             }
             else {
@@ -71,7 +75,7 @@ public class MessageQueue <T> {
                 if(element.guard()) {
                     return this.tailQueue.poll();
                 } else {
-                    return moveQuesesAsLongAsYouCanPoll(element.getType());
+                    return moveToPriorityAsLongAsYouCannotPollTail(element.getType());
                 }
             }
         }
@@ -81,5 +85,16 @@ public class MessageQueue <T> {
         } finally {
             this.lock.unlock();
         }
+    }
+
+    public void enqueue(IMethodRequest method) {
+        this.lock.lock();
+        final var type = method.getType();
+        this.tailQueue.add(method);
+
+        this.emptyCondition.signal();
+        this.signalOtherTypes(type);
+
+        this.lock.unlock();
     }
 }
