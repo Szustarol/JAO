@@ -1,6 +1,8 @@
 package JAO;
 
+import javax.swing.*;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MessageFuture<T>{
     private volatile Iterable<T> data = null;
@@ -15,6 +17,7 @@ public class MessageFuture<T>{
         this.data = data;
         this.dataSize = n;
         resultLock.notify();
+        resultLock = new ReentrantLock();
     }
 
     public Iterable<T> getResult(){

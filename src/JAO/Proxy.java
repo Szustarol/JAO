@@ -13,9 +13,11 @@ public class Proxy <T>{
         scheduler = new Scheduler<T>();
     }
 
-    public void put(Iterable<T> input, int n){
-        var request = new Put<T>(input, n);
+    public MessageFuture<T> put(Iterable<T> input, int n){
+        var result = new MessageFuture<T>();
+        var request = new Put<T>(input, n, result);
         scheduler.enqueue(request);
+        return result;
     }
 
     public MessageFuture<T> take(int n){
