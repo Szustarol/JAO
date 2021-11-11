@@ -1,10 +1,9 @@
-package JAO;
+package JAO.MethodRequest;
 
-enum MethoRequestType {
-    Consume, Produce
-}
+
 
 public interface IMethodRequest {
     boolean guard();
     void call();
+    MethodRequestType getType();
 }
