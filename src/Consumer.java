@@ -10,19 +10,19 @@ public class Consumer extends AbstractClient{
     public void run(){
         while(!stop){
             if(verbose)
-                System.out.println("Consumer taking items.");
+                System.out.printf("Consumer %d: taking items.%n", index);
 
-            var future = proxy.take(20);
+            var future = proxy.take(1);
 
             //Do something
-            safeSleep(20);
+            safeSleep(13);
 
             if(verbose)
-                System.out.println("Consumer done bookkeeping.");
+                System.out.printf("Consumer %d: done bookkeeping.%n", index);
 
             var result = future.getResult();
             if(verbose){
-                System.out.println("Consumer - got result: " + result.toString());
+                System.out.println("Consumer %d: got result: ".formatted(index) + result.toString());
             }
         }
     }

@@ -11,24 +11,24 @@ public class Producer extends AbstractClient{
 
     public void run(){
 
-        ArrayList<Double> data = new ArrayList<>(20);
-        for(double i = 10; i < 20; i += 1){
+        ArrayList<Double> data = new ArrayList<>(10);
+        for(double i = 0; i < 10; i += 1){
             data.add(i);
         }
 
         while(!stop){
             if(verbose)
-                System.out.println("Producer inserting items.");
+                System.out.println("Producer %d: inserting items: ".formatted(index) + data.toString());
 
             var result = proxy.put(data, data.size());
 
-            safeSleep(20);
+            safeSleep(23);
             if(verbose)
-                System.out.println("Producer done bookkeeping.");
+                System.out.printf("Producer %d: done bookkeeping.%n", index);
 
             if(verbose){
                 result.getResult();
-                System.out.println("Producer - done insertion.");
+                System.out.printf("Producer %d: done insertion.%n", index);
             }
         }
     }

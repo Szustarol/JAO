@@ -11,9 +11,12 @@ public class Servant<T> {
     private int capacity;
     private int size;
 
-    public Servant(int capacity){
+    private boolean verbose;
+
+    public Servant(int capacity, boolean verbose){
         this.capacity = capacity;
         this.size = 0;
+        this.verbose = verbose;
         buffer = (T[])new Object[capacity];
     }
 
@@ -26,8 +29,9 @@ public class Servant<T> {
     }
 
     public void put(Iterable<T> data, int n){
-        System.out.println("Servant, insertion:");
-        System.out.println(data);
+        if(verbose){
+            System.out.println("Servant - data insertion: " + data.toString());
+        }
         for(T elem : data){
             buffer[writeIndex] = elem;
             writeIndex = (writeIndex+1) % capacity;
@@ -37,16 +41,13 @@ public class Servant<T> {
 
     public ArrayList<T> get(int n){
         var result = new ArrayList<T>(n);
-        for(int i = readIndex, taken = 0; taken < n; readIndex = (readIndex+1) % capacity, taken++){
-            result.add(buffer[i]);
+        for(int taken = 0; taken < n; readIndex = (readIndex+1) % capacity, taken++){
+            result.add(buffer[readIndex]);
         }
         size -= n;
-        String res = "";
-        res = ("Servant, buffer while taking:\n");
-        for(var elem : buffer){
-            res = res  + elem + ", ";
+        if(verbose){
+            System.out.println("Servant - data removal: " + result.toString());
         }
-        System.out.println(res);
         return result;
     }
 }

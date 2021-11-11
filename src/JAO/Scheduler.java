@@ -30,7 +30,7 @@ public class Scheduler<T>{
         servantHandler = new ServantHandler<T>();
         var servantThread = new Thread(servantHandler);
         servantThread.start();
-        servant = new Servant<T>(50);
+        servant = new Servant<T>(20, true);
     }
 
     public void stop(){
