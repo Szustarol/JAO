@@ -52,6 +52,15 @@ public class MessageQueue <T> {
         }
     }
 
+    private IMethodRequest<T> pollFrom(Queue<IMethodRequest<T>> queue) throws InterruptedException {
+        var head = queue.element();
+        if(head.guard()) {
+            return queue.poll();
+        } else {
+            return this.moveToPriorityAsLongAsYouCannotPollTail(head.getType());
+        }
+    }
+
     public IMethodRequest<T> deque() {
         this.lock.lock();
         try {
@@ -60,20 +69,10 @@ public class MessageQueue <T> {
             }
 
             if(!this.priorityQueue.isEmpty()) {
-                var head = this.priorityQueue.element();
-                if(head.guard()) {
-                    return this.priorityQueue.poll();
-                } else {
-                    return moveToPriorityAsLongAsYouCannotPollTail(head.getType());
-                }
+                return this.pollFrom(this.priorityQueue);
             }
             else {
-                var element = this.tailQueue.element();
-                if(element.guard()) {
-                    return this.tailQueue.poll();
-                } else {
-                    return moveToPriorityAsLongAsYouCannotPollTail(element.getType());
-                }
+                return this.pollFrom(this.tailQueue);
             }
         }
         catch (InterruptedException e) {
