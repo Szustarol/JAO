@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Proxy <T>{
 
-    private Scheduler<T> scheduler;
+    private final Scheduler<T> scheduler;
 
     public Proxy(){
         scheduler = new Scheduler<T>();

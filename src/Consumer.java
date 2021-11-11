@@ -17,10 +17,12 @@ public class Consumer extends AbstractClient{
             //Do something
             safeSleep(20);
 
+            if(verbose)
+                System.out.println("Consumer done bookkeeping.");
+
             var result = future.getResult();
             if(verbose){
-                System.out.println("Consumer - got result:");
-                System.out.println(result);
+                System.out.println("Consumer - got result: " + result.toString());
             }
         }
     }

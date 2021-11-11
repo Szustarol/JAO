@@ -14,6 +14,7 @@ public class Servant<T> {
     public Servant(int capacity){
         this.capacity = capacity;
         this.size = 0;
+        buffer = (T[])new Object[capacity];
     }
 
     public int nSpaceAvailable(){
@@ -25,6 +26,8 @@ public class Servant<T> {
     }
 
     public void put(Iterable<T> data, int n){
+        System.out.println("Servant, insertion:");
+        System.out.println(data);
         for(T elem : data){
             buffer[writeIndex] = elem;
             writeIndex = (writeIndex+1) % capacity;
@@ -38,6 +41,12 @@ public class Servant<T> {
             result.add(buffer[i]);
         }
         size -= n;
+        String res = "";
+        res = ("Servant, buffer while taking:\n");
+        for(var elem : buffer){
+            res = res  + elem + ", ";
+        }
+        System.out.println(res);
         return result;
     }
 }

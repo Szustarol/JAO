@@ -12,7 +12,7 @@ public class Producer extends AbstractClient{
     public void run(){
 
         ArrayList<Double> data = new ArrayList<>(20);
-        for(double i = 0; i < 20; i += 1){
+        for(double i = 10; i < 20; i += 1){
             data.add(i);
         }
 
@@ -22,11 +22,13 @@ public class Producer extends AbstractClient{
 
             var result = proxy.put(data, data.size());
 
-            //Do something
             safeSleep(20);
+            if(verbose)
+                System.out.println("Producer done bookkeeping.");
+
             if(verbose){
                 result.getResult();
-                System.out.println("Producer - done bookkeeping.");
+                System.out.println("Producer - done insertion.");
             }
         }
     }

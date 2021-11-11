@@ -28,8 +28,9 @@ public class Scheduler<T>{
     public Scheduler(){
         this.messageQueue = new MessageQueue<T>();
         servantHandler = new ServantHandler<T>();
-        new Thread(servantHandler);
-        servant = new Servant<T>(1000);
+        var servantThread = new Thread(servantHandler);
+        servantThread.start();
+        servant = new Servant<T>(50);
     }
 
     public void stop(){

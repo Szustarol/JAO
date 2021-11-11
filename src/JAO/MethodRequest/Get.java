@@ -11,7 +11,7 @@ public class Get<T> extends MethodRequestBase {
     public Get(int n, MessageFuture<T> future){
         super(MethodRequestType.Consume);
         this.nToGet = n;
-        future = future;
+        this.future = future;
     }
 
     @Override
