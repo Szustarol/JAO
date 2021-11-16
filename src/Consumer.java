@@ -12,10 +12,10 @@ public class Consumer extends AbstractClient{
             if(verbose)
                 System.out.printf("Consumer %d: taking items.%n", index);
 
-            var future = proxy.take(1);
+            var future = proxy.take(4);
 
             //Do something
-            safeSleep(13);
+            safeSleep(130);
 
             if(verbose)
                 System.out.printf("Consumer %d: done bookkeeping.%n", index);

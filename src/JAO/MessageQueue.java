@@ -15,6 +15,7 @@ public class MessageQueue <T> {
     private final Lock lock = new ReentrantLock(true);
     private final Condition emptyCondition = lock.newCondition();
     private final Map<MethodRequestType, Condition> typesConditions = new HashMap<>();
+    private final Map<MethodRequestType, Integer> typesCount = new HashMap<>();
 
     private Condition getTypeCondition(MethodRequestType type) {
         if(typesConditions.containsKey(type)) {
@@ -24,6 +25,31 @@ public class MessageQueue <T> {
             typesConditions.put(type, condition);
             return condition;
         }
+    }
+
+    private void addToQueueUsingCounter(Queue<IMethodRequest<T>> queue, IMethodRequest<T> request) {
+        queue.add(request);
+        final var type = request.getType();
+        if (typesCount.containsKey(type)) {
+            typesCount.put(type, typesCount.get(type) + 1);
+        } else {
+            typesCount.put(type, 1);
+        }
+    }
+
+    private IMethodRequest<T> pollQueueUsingCounter(Queue<IMethodRequest<T>> queue) {
+        final var type = queue.element().getType();
+        typesCount.put(type, typesCount.get(type) - 1);
+        return queue.poll();
+    }
+
+    private boolean hasRequestWithOtherType(MethodRequestType type) {
+        for(var obj : this.typesCount.entrySet()) {
+            if(obj.getKey() != type && obj.getValue() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void moveToPriority(MethodRequestType type) {
@@ -41,21 +67,18 @@ public class MessageQueue <T> {
     }
 
     private IMethodRequest<T> moveToPriorityAsLongAsYouCannotPollTail(MethodRequestType type) throws InterruptedException {
-        while(true) {
-            this.moveToPriority(type);
-            if(this.tailQueue.isEmpty()) {
-                var condition = this.getTypeCondition(type);
-                condition.await();
-            } else {
-                return this.tailQueue.poll();
-            }
+        while(!this.hasRequestWithOtherType(type)) {
+            var condition = this.getTypeCondition(type);
+            condition.await();
         }
+        this.moveToPriority(type);
+        return this.pollFrom(this.tailQueue);
     }
 
     private IMethodRequest<T> pollFrom(Queue<IMethodRequest<T>> queue) throws InterruptedException {
         var head = queue.element();
         if(head.guard()) {
-            return queue.poll();
+            return this.pollQueueUsingCounter(queue);
         } else {
             return this.moveToPriorityAsLongAsYouCannotPollTail(head.getType());
         }
@@ -86,7 +109,8 @@ public class MessageQueue <T> {
     public void enqueue(IMethodRequest<T> method) {
         this.lock.lock();
         final var type = method.getType();
-        this.tailQueue.add(method);
+
+        this.addToQueueUsingCounter(this.tailQueue, method);
 
         this.emptyCondition.signal();
         this.signalOtherTypes(type);

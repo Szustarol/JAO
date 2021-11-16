@@ -10,7 +10,7 @@ public class MessageFuture<T>{
 
     public boolean poll(){
         return data != null;
-    }
+    } // dodac synchro
 
     public synchronized void setData(Iterable<T> data, int n){
         this.data = data;
