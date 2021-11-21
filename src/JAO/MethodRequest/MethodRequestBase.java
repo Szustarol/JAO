@@ -6,7 +6,7 @@ public abstract class MethodRequestBase<T> implements IMethodRequest<T> {
 
     protected Servant<T> servant;
 
-    public void setServant(Servant servant){
+    public void setServant(Servant<T> servant){
         this.servant = servant;
     }
 

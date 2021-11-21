@@ -3,7 +3,7 @@ package JAO.MethodRequest;
 import JAO.MessageFuture;
 import JAO.Servant;
 
-public class Get<T> extends MethodRequestBase {
+public class Get<T> extends MethodRequestBase<T> {
 
     int nToGet;
     MessageFuture<T> future;
