@@ -25,12 +25,12 @@ public class Scheduler<T>{
         this.messageQueue.enqueue(request);
     }
 
-    public Scheduler(){
+    public Scheduler(int capacity){
         this.messageQueue = new MessageQueue<T>();
         servantHandler = new ServantHandler<T>();
         var servantThread = new Thread(servantHandler);
         servantThread.start();
-        servant = new Servant<T>(20, true);
+        servant = new Servant<T>(capacity, false);
     }
 
     public void stop(){

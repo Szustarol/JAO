@@ -9,8 +9,8 @@ public class Proxy <T>{
 
     private final Scheduler<T> scheduler;
 
-    public Proxy(){
-        scheduler = new Scheduler<T>();
+    public Proxy(int capacity){
+        scheduler = new Scheduler<T>(capacity);
     }
 
     public MessageFuture<T> put(Iterable<T> input, int n){

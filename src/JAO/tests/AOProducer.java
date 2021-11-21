@@ -2,6 +2,8 @@ package JAO.tests;
 
 import JAO.Proxy;
 import JAO.client.AbstractClient;
+import JAO.tests.utility.DebugEntry;
+import JAO.tests.utility.DebugPrint;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,6 +41,10 @@ public class AOProducer extends AbstractClient {
                 result.getResult();
                 System.out.printf("AOProducer %d: done insertion.%n", index);
             }
+
+            var entry = new DebugEntry();
+            entry.unitsOfWork = this.workUnits;
+            DebugPrint.addOperation(0, entry);
         }
     }
 }
