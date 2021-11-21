@@ -1,17 +1,19 @@
 package JAO;
 
+import JAO.tests.UnitOfWork;
+
 import java.util.ArrayList;
 
 public class Servant<T> {
-    private T [] buffer;
+    private final T [] buffer;
 
     private int writeIndex = 0;
     private int readIndex = 0;
 
-    private int capacity;
+    private final int capacity;
     private int size;
 
-    private boolean verbose;
+    private final boolean verbose;
 
     public Servant(int capacity, boolean verbose){
         this.capacity = capacity;
@@ -32,9 +34,11 @@ public class Servant<T> {
         if(verbose){
             System.out.println("Servant - data insertion: " + data.toString());
         }
+
         for(T elem : data){
             buffer[writeIndex] = elem;
             writeIndex = (writeIndex+1) % capacity;
+            UnitOfWork.doUnitOfWork((double) elem);
         }
         size += n;
     }
@@ -42,7 +46,9 @@ public class Servant<T> {
     public ArrayList<T> get(int n){
         var result = new ArrayList<T>(n);
         for(int taken = 0; taken < n; readIndex = (readIndex+1) % capacity, taken++){
-            result.add(buffer[readIndex]);
+            var elem = buffer[readIndex];
+            UnitOfWork.doUnitOfWork((double) elem);
+            result.add(elem);
         }
         size -= n;
         if(verbose){

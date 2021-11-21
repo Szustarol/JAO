@@ -1,3 +1,5 @@
+package JAO.client;
+
 import JAO.Proxy;
 
 import java.util.ArrayList;
@@ -18,17 +20,17 @@ public class Producer extends AbstractClient{
 
         while(!stop){
             if(verbose)
-                System.out.println("Producer %d: inserting items: ".formatted(index) + data.toString());
+                System.out.println("JAO.client.Producer %d: inserting items: ".formatted(index) + data.toString());
 
             var result = proxy.put(data, data.size());
 
             safeSleep(23);
             if(verbose)
-                System.out.printf("Producer %d: done bookkeeping.%n", index);
+                System.out.printf("JAO.client.Producer %d: done bookkeeping.%n", index);
 
             if(verbose){
                 result.getResult();
-                System.out.printf("Producer %d: done insertion.%n", index);
+                System.out.printf("JAO.client.Producer %d: done insertion.%n", index);
             }
         }
     }

@@ -1,6 +1,8 @@
+package JAO.client;
+
 import JAO.Proxy;
 
-public abstract class AbstractClient implements Runnable{
+public abstract class AbstractClient implements Runnable {
     protected boolean verbose;
     protected int index;
     protected volatile boolean stop = false;

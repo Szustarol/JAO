@@ -1,12 +1,14 @@
 import JAO.Proxy;
+import JAO.client.AbstractClient;
+import JAO.client.Consumer;
+import JAO.client.Producer;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Main {
     public static void main(String [] args){
         var proxy = new Proxy<Double>();
-        AbstractClient [] clients = {
+        AbstractClient[] clients = {
                 new Consumer(0, true, proxy),
                 new Consumer(1, true, proxy),
                 new Consumer(2, true, proxy),

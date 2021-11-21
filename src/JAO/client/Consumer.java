@@ -1,3 +1,5 @@
+package JAO.client;
+
 import JAO.Proxy;
 
 public class Consumer extends AbstractClient{
@@ -10,7 +12,7 @@ public class Consumer extends AbstractClient{
     public void run(){
         while(!stop){
             if(verbose)
-                System.out.printf("Consumer %d: taking items.%n", index);
+                System.out.printf("JAO.client.Consumer %d: taking items.%n", index);
 
             var future = proxy.take(4);
 
@@ -18,11 +20,11 @@ public class Consumer extends AbstractClient{
             safeSleep(130);
 
             if(verbose)
-                System.out.printf("Consumer %d: done bookkeeping.%n", index);
+                System.out.printf("JAO.client.Consumer %d: done bookkeeping.%n", index);
 
             var result = future.getResult();
             if(verbose){
-                System.out.println("Consumer %d: got result: ".formatted(index) + result.toString());
+                System.out.println("JAO.client.Consumer %d: got result: ".formatted(index) + result.toString());
             }
         }
     }

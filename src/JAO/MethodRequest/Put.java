@@ -5,7 +5,7 @@ import JAO.Servant;
 
 import java.util.ArrayList;
 
-public class Put<T> extends MethodRequestBase {
+public class Put<T> extends MethodRequestBase<T> {
     int nToPut;
     Iterable<T> data;
     MessageFuture<T> future;
