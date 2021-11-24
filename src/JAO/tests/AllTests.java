@@ -15,7 +15,7 @@ public class AllTests {
             );
             var test = new SingleTest(parameter);
             System.out.println("Running test number " + (i + 1) + "...");
-            test.runTest(60);
+            test.runTest(100);
             test.appendResultToFile("results.csv");
             System.out.println("Finished test number " + (i + 1) + ".");
         }
